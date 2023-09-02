@@ -1,0 +1,34 @@
+import os
+import subprocess
+
+
+def run_bash_command_on_folders(folder, output_folder):
+
+    # List all subfolders inside the main folder
+    subfolders = [subfolder for subfolder in os.listdir(folder) if os.path.isdir(os.path.join(folder, subfolder))]
+
+    for subfolder in subfolders:
+        # Construct the full path to the subfolder
+        subfolder_path = os.path.join(folder, subfolder)
+        list_ = [filename for filename in os.listdir(subfolder_path) if filename.lower().endswith(".nii")]
+        if list_ == []:
+            run_bash_command_on_folders(subfolder_path, output_folder)
+        else:
+            bash_command = f'mv {subfolder_path} {output_folder}'
+            print('COMMAND', bash_command)
+            try:
+                    # Execute the bash command using subprocess
+                    subprocess.run(bash_command, shell=True, check=True)
+            except subprocess.CalledProcessError as e:
+                    print(f"Error executing command for folder '{subfolder_path}': {e}")
+
+
+
+
+if __name__ == "__main__":
+    # Replace these paths with your actual input and output folder paths
+    folder = "/Users/sasha/Desktop/DS/Thesis/data.nosync/CN_FOR_BAE_DATA/ADNI_2"
+    output_folder = "/Users/sasha/Desktop/DS/Thesis/data.nosync/CN_FOR_BAE_DATA/CN_not_BL"
+    
+    run_bash_command_on_folders(folder, output_folder)
+
